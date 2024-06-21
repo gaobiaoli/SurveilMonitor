@@ -12,7 +12,6 @@ from PIL import Image
 from vUtils.player import Player
 from vUtils.capture import BaseVideoCapture,FasterVideoCapture,VibrationCalibrator,DeVibVideoCapture
 
-
 from ClipAdapter.adapter import ClipAdapter
 from utils.clip_utils import (
     batch_crop,
@@ -52,8 +51,8 @@ if __name__ == "__main__":
 
     player = Player()
     ## model
-    checkpoint="epoch_100.pth"
-    config="det-config.py"
+    checkpoint="weight\\epoch_100.pth"
+    config="weight\\det-config.py"
     device="cuda:0"
     model = init_detector(config, checkpoint, device=device)
     model.cfg.test_dataloader.dataset.pipeline[0].type = 'LoadImageFromNDArray'
@@ -69,18 +68,16 @@ if __name__ == "__main__":
     visualizer.dataset_meta=clip_meta
     clip_model, preprocess = clip.load("ViT-B/16", device=device)
     clip_adapter=ClipAdapter(clip_model,classnames=clip_token,device=device)
-    clip_adapter.load("adapter1.pth")
+    clip_adapter.load("weight\\adapter1.pth")
     status_list=[]
     img_path=f"result/{videoId}"
     if not os.path.exists(img_path):
         os.mkdir(img_path)
-    # dir="/home/gaobiaoli/dataset/result/worker"
-    # id=0
     while True:
         t1=time.time()
         ret, frame = cap.read()
-        # if cap.count()%5000==0:
-        #     cv2.imwrite(f"/home/gaobiaoli/dataset/result/gt/{videoId}/{cap.count()}.jpg",frame)
+        if cap.count()%5000==0:
+            cv2.imwrite(f"result/gt/{videoId}/{cap.count()}.jpg",frame)
         if ret:
             result = inference_detector(model, frame, test_pipeline=test_pipeline)
             
@@ -107,7 +104,7 @@ if __name__ == "__main__":
                 else:
                     points=[]
                 status_list.append(points)
-                torch.save(status_list,f"result/{videoId}_i100.pth")
+                torch.save(status_list,f"result/{videoId}_i100_1.pth")
             #############################
 
 

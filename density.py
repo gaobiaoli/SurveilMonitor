@@ -112,7 +112,9 @@ class Delta():
             shape=self.shape
         map=np.zeros(shape[:2],dtype=np.float32)
         for point in points:
-            if point[1]<0 or int(point[0])<0:
+            if int(point[1])<0 or int(point[0])<0:
+                continue
+            if int(point[1])>map.shape[0]-1 or int(point[0])>map.shape[1]-1:
                 continue
             map[int(point[1]),int(point[0])]+=1
         return map
